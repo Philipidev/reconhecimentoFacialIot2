@@ -12,30 +12,50 @@ Este projeto implementa um sistema de controle de acesso usando **Raspberry Pi 3
 ## Estrutura do Projeto
 
 ```
-access-control-system/
+reconhecimento_facial_iot/
 │
 ├── backend/
-│   ├── app.py                  # API principal para reconhecimento facial
-│   ├── requirements.txt         # Dependências do backend (Flask, dlib, etc.)
-│   └── static/
-│       └── index.html           # Página web para visualizar o feed da câmera IP
+│   ├── static/
+│   ├── templates/
+│   │   ├── add_face.html        # Interface para adicionar rostos ao sistema.
+│   │   ├── index.html           # Página inicial do sistema.
+│   │   └── recognize.html       # Interface para teste de reconhecimento facial.
+│   ├── uploads/                 # Diretório para armazenar imagens enviadas.
+│   ├── app.py                   # API principal para reconhecimento facial.
+│   ├── dlib_face_recognition_resnet_model_v1.dat # Modelo de rede neural para extração de descritores faciais (pré-treinado).
+│   ├── shape_predictor_68_face_landmarks.dat     # Modelo para identificar pontos faciais (landmarks).
+│   ├── known_faces.pkl          # Arquivo contendo os descritores faciais dos usuários cadastrados.
+│   └── requirements.txt         # Dependências do backend (Flask, dlib, etc.).
 │
 ├── raspberry/
-│   ├── capture_and_send.py      # Script do Raspberry Pi para capturar e enviar imagens
-│   ├── config.py                # Configurações da câmera IP, backend e GPIO
-│   └── requirements.txt         # Dependências do Raspberry Pi (OpenCV, requests, RPi.GPIO)
+│   ├── capture_and_send.py      # Script do Raspberry Pi para capturar e enviar imagens.
+│   ├── config.py                # Configurações da câmera IP, backend e GPIO.
+│   └── requirements.txt         # Dependências do Raspberry Pi (OpenCV, requests, RPi.GPIO).
 │
-└── docs/
-    └── README.md                # Documentação do projeto
+└── readme.md                    # Documentação do projeto.
 ```
 
-## Requisitos de Hardware
-- **Raspberry Pi 3** (ou superior)
-- **Módulo NFC** (ex.: Adafruit PN532)
-- **Relé** para controle de porta
-- **Câmera IP** (ou celular configurado como câmera IP com aplicativos como IP Webcam)
-- **Cartões NFC**
-- **LEDs e Buzzer** para feedback visual e sonoro
+## Arquivos Explicados
+
+### Backend
+
+- **static/**: Pasta para armazenar arquivos estáticos, como imagens ou arquivos CSS para estilizar a aplicação.
+- **templates/**: Contém as páginas HTML usadas para interagir com o sistema.
+  - **add_face.html**: Página para adicionar novos rostos ao sistema. O usuário faz o upload de uma imagem e fornece um nome.
+  - **index.html**: Página inicial do sistema, que apresenta as funcionalidades principais.
+  - **recognize.html**: Página para realizar testes de reconhecimento facial, onde uma imagem é carregada e analisada para determinar se o rosto é reconhecido.
+- **uploads/**: Diretório para armazenar imagens enviadas pelo usuário.
+- **app.py**: Código principal da API em Flask, que gerencia o reconhecimento facial, a adição de novos rostos e as interfaces web.
+- **dlib_face_recognition_resnet_model_v1.dat**: Arquivo contendo um modelo de rede neural convolucional pré-treinado para extração de descritores faciais. Esse modelo é usado para calcular características faciais que são únicas para cada pessoa.
+- **shape_predictor_68_face_landmarks.dat**: Arquivo contendo um modelo que detecta 68 pontos de referência (landmarks) no rosto, como a posição dos olhos, nariz e boca. Esses pontos são usados para alinhar o rosto antes de extrair o descritor facial.
+- **known_faces.pkl**: Arquivo gerado automaticamente que contém os descritores faciais das pessoas registradas. Ele é carregado na memória para verificar se um rosto é reconhecido quando uma imagem é enviada.
+- **requirements.txt**: Contém as bibliotecas necessárias para rodar o backend, como Flask, dlib, e OpenCV.
+
+### Raspberry Pi
+
+- **capture_and_send.py**: Script que captura imagens da câmera IP conectada ao Raspberry Pi e as envia para o backend para análise. Ele também gerencia o controle do relé para abrir a porta em caso de reconhecimento bem-sucedido.
+- **config.py**: Arquivo de configuração contendo informações como a URL da câmera IP, o endereço do backend, e a configuração dos pinos GPIO do Raspberry Pi.
+- **requirements.txt**: Lista de dependências necessárias para rodar o script do Raspberry Pi, incluindo bibliotecas como OpenCV, RPi.GPIO e requests.
 
 ## Configuração e Instalação
 
@@ -82,11 +102,6 @@ O Raspberry Pi captura imagens da câmera IP, envia para o backend e controla o 
    ```bash
    python3 capture_and_send.py
    ```
-
-### 3. Conexão dos Componentes
-
-- Conecte o relé ao pino GPIO definido no `config.py` para controlar a abertura da porta.
-- Conecte o módulo NFC ao Raspberry Pi conforme o mapeamento de pinos.
 
 ## Testes
 
