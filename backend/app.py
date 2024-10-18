@@ -1,11 +1,14 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 import cv2
 import dlib
 import numpy as np
 import os
 import pickle
+from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
+app.config['UPLOAD_FOLDER'] = 'uploads/'
+os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
 # Configuração do detector de rostos usando dlib
 detector = dlib.get_frontal_face_detector()
@@ -19,6 +22,14 @@ if os.path.exists("known_faces.pkl"):
         known_faces = pickle.load(f)
 else:
     known_faces = {}
+
+@app.route('/')
+def index():
+    return render_template('add_face.html')
+
+@app.route('/recognize_form')
+def recognize_form():
+    return render_template('recognize.html')
 
 @app.route('/recognize', methods=['POST'])
 def recognize():
@@ -49,10 +60,11 @@ def recognize():
         face_descriptor = descriptor_extractor.compute_face_descriptor(img, shape)
 
         # Verificação no banco de dados
-        for name, known_descriptor in known_faces.items():
-            distance = np.linalg.norm(np.array(known_descriptor) - np.array(face_descriptor))
-            if distance < 0.6:
-                return jsonify({"access_granted": True, "recognized_face": name})
+        for name, known_descriptors in known_faces.items():
+            for known_descriptor in known_descriptors:
+                distance = np.linalg.norm(np.array(known_descriptor) - np.array(face_descriptor))
+                if distance < 0.6:
+                    return jsonify({"access_granted": True, "recognized_face": name})
 
     return jsonify({"access_granted": False, "faces_detected": len(faces)})
 
@@ -67,10 +79,13 @@ def add_face():
     if file.filename == '' or not name:
         return "Arquivo de imagem e nome válidos são necessários", 400
 
+    # Salvar a imagem enviada
+    filename = secure_filename(file.filename)
+    file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+    file.save(file_path)
+
     # Leia a imagem
-    img_bytes = file.read()
-    npimg = np.frombuffer(img_bytes, np.uint8)
-    img = cv2.imdecode(npimg, cv2.IMREAD_COLOR)
+    img = cv2.imread(file_path)
 
     # Converte a imagem para escala de cinza
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
@@ -86,7 +101,12 @@ def add_face():
     face_descriptor = descriptor_extractor.compute_face_descriptor(img, shape)
 
     # Armazena o descritor no banco de dados
-    known_faces[name] = face_descriptor
+    if name in known_faces:
+        known_faces[name] = list(known_faces[name])
+        known_faces[name].append(face_descriptor)
+    else:
+        known_faces[name] = [face_descriptor]
+
     with open("known_faces.pkl", "wb") as f:
         pickle.dump(known_faces, f)
 
