@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { View, Button, Image, Text, TextInput, StyleSheet } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
-import axios from 'axios';
+import { addFace } from '../../services/api';
 
 const AddFaceScreen: React.FC = () => {
   const [photo, setPhoto] = useState<string | null>(null);
   const [name, setName] = useState<string>('');
   const [message, setMessage] = useState<string>('');
+  const [ehErro, setEhErro] = useState<boolean>(false);
 
   useEffect(() => {
     (async () => {
@@ -32,31 +33,23 @@ const AddFaceScreen: React.FC = () => {
   const uploadPhoto = async () => {
     if (!name) {
       setMessage('Por favor, insira um nome.');
+      setEhErro(true);
       return;
     }
 
     if (!photo) {
       setMessage('Por favor, selecione uma imagem.');
+      setEhErro(true);
       return;
     }
 
-    const formData = new FormData();
-    formData.append('file', {
-      uri: photo,
-      type: 'image/jpeg',
-      name: 'photo.jpg'
-    });
-    formData.append('name', name);
-
     try {
-      const response = await axios.post('http://<backend_ip>:5000/add_face', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      });
-      setMessage(response.data);
+      const response = await addFace(name, photo); // Utiliza a função addFace do api.ts
+      setMessage(response);
+      setEhErro(false);
     } catch (error) {
       console.error('Erro ao enviar imagem: ', error);
+      setEhErro(true);
       setMessage('Erro ao adicionar rosto. Por favor, tente novamente.');
     }
   };
@@ -76,8 +69,10 @@ const AddFaceScreen: React.FC = () => {
           style={styles.image}
         />
       )}
-      <Button title="Adicionar Rosto" onPress={uploadPhoto} style={{ marginTop: 20 }} />
-      {message ? <Text style={styles.message}>{message}</Text> : null}
+      <Button title="Adicionar Rosto" onPress={uploadPhoto} />
+      {message ? <Text style={
+        ehErro ? [styles.message, { color: '#d9534f' }] : styles.message
+        }>{message}</Text> : null}
     </View>
   );
 };
@@ -101,8 +96,11 @@ const styles = StyleSheet.create({
   message: {
     marginTop: 20,
     fontSize: 16,
-    color: '#d9534f',
+    color: '#71d94f',
   },
+  button:{
+    marginTop: 20,
+  }
 });
 
 export default AddFaceScreen;

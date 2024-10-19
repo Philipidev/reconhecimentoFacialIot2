@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { View, Button, Image, Text, StyleSheet } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
-import axios from 'axios';
+import { recognizeFace } from '../../services/api'; // Importa a função recognizeFace
 
 const ValidateFaceScreen: React.FC = () => {
   const [photo, setPhoto] = useState<string | null>(null);
   const [message, setMessage] = useState<string>('');
+  const [ehErro, setEhErro] = useState<boolean>(false);
 
   useEffect(() => {
     (async () => {
@@ -34,26 +35,18 @@ const ValidateFaceScreen: React.FC = () => {
       return;
     }
 
-    const formData = new FormData();
-    formData.append('file', {
-      uri: photo,
-      type: 'image/jpeg',
-      name: 'photo.jpg'
-    });
-
     try {
-      const response = await axios.post('http://<backend_ip>:5000/recognize', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      });
-      if (response.data.access_granted) {
-        setMessage(`Acesso concedido. Rosto reconhecido: ${response.data.recognized_face}`);
+      const response = await recognizeFace(photo); // Utiliza a função recognizeFace do api.ts
+      if (response.access_granted) {
+        setMessage(`Acesso concedido. Rosto reconhecido: ${response.recognized_face}`);
+        setEhErro(false);
       } else {
         setMessage('Acesso negado. Rosto não reconhecido.');
+        setEhErro(true);
       }
     } catch (error) {
       console.error('Erro ao validar imagem: ', error);
+      setEhErro(true);
       setMessage('Erro ao validar rosto. Por favor, tente novamente.');
     }
   };
@@ -67,8 +60,11 @@ const ValidateFaceScreen: React.FC = () => {
           style={styles.image}
         />
       )}
-      <Button title="Validar Rosto" onPress={validatePhoto} style={{ marginTop: 20 }} />
-      {message ? <Text style={styles.message}>{message}</Text> : null}
+      <Button title="Validar Rosto" onPress={validatePhoto} />
+      {message ? <Text style={
+        ehErro ? [styles.message, { color: '#d9534f' }] : styles.message
+
+      }>{message}</Text> : null}
     </View>
   );
 };
@@ -85,7 +81,7 @@ const styles = StyleSheet.create({
   message: {
     marginTop: 20,
     fontSize: 16,
-    color: '#d9534f',
+    color: '#71d94f',
   },
 });
 
