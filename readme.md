@@ -96,13 +96,13 @@ O backend é responsável por processar as imagens enviadas pelo Raspberry Pi e 
 
    ```bash
    cd backend
-   pip3 install -r requirements.txt
+   pip install -r requirements.txt
    ```
 
 3. Execute o servidor Flask:
 
    ```bash
-   python3 app.py
+   py app.py
    ```
 
 4. Acesse o backend via `http://<backend_ip>:5000`.
@@ -154,13 +154,13 @@ O aplicativo mobile foi desenvolvido em **React Native** usando **Expo** para fa
    ```bash
    cd FaceRecognitionApp
    npm install
-   npx expo install
+   npm install expo -g
    ```
 
 2. Inicie o aplicativo usando Expo:
 
    ```bash
-   npx expo start
+   npm start
    ```
 
 3. Utilize um dispositivo móvel com o aplicativo **Expo Go** para escanear o QR code e testar o aplicativo.
