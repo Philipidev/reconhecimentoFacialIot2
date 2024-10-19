@@ -32,7 +32,21 @@ reconhecimento_facial_iot/
 │   ├── config.py                # Configurações da câmera IP, backend e GPIO.
 │   └── requirements.txt         # Dependências do Raspberry Pi (OpenCV, requests, RPi.GPIO).
 │
-└── readme.md                    # Documentação do projeto.
+├── FaceRecognitionApp/
+│   ├── src/
+│   │   ├── components/
+│   │   │   ├── AddFaceScreen.tsx        # Tela para adicionar rostos.
+│   │   │   ├── ValidateFaceScreen.tsx   # Tela para validar rostos.
+│   │   │   └── CameraFeedScreen.tsx     # Tela para visualizar o feed da câmera (em desenvolvimento).
+│   │   ├── services/
+│   │   │   └── api.ts                   # Serviço para comunicação com o backend.
+│   ├── App.tsx                          # Componente principal do aplicativo React Native.
+│   ├── app.json                         # Configuração do aplicativo Expo.
+│   ├── babel.config.js                  # Configuração do Babel.
+│   ├── tsconfig.json                    # Configuração do TypeScript.
+│   └── package.json                     # Dependências do aplicativo mobile.
+│
+└── readme.md                            # Documentação do projeto.
 ```
 
 ## Arquivos Explicados
@@ -56,6 +70,19 @@ reconhecimento_facial_iot/
 - **capture_and_send.py**: Script que captura imagens da câmera IP conectada ao Raspberry Pi e as envia para o backend para análise. Ele também gerencia o controle do relé para abrir a porta em caso de reconhecimento bem-sucedido.
 - **config.py**: Arquivo de configuração contendo informações como a URL da câmera IP, o endereço do backend, e a configuração dos pinos GPIO do Raspberry Pi.
 - **requirements.txt**: Lista de dependências necessárias para rodar o script do Raspberry Pi, incluindo bibliotecas como OpenCV, RPi.GPIO e requests.
+
+### FaceRecognitionApp (Aplicativo Mobile)
+
+- **src/components/**: Contém as telas principais do aplicativo.
+  - **AddFaceScreen.tsx**: Tela para adicionar um novo rosto ao sistema, capturando a imagem e o nome.
+  - **ValidateFaceScreen.tsx**: Tela para validar um rosto, verificando se a pessoa está registrada.
+  - **CameraFeedScreen.tsx**: Tela para visualizar o feed da câmera (em desenvolvimento).
+- **src/services/api.ts**: Serviço que define as funções para comunicação com o backend via HTTP.
+- **App.tsx**: Componente principal que define as rotas do aplicativo usando React Navigation.
+- **app.json**: Configuração do aplicativo Expo.
+- **babel.config.js**: Arquivo de configuração do Babel para transpilar o código JavaScript.
+- **tsconfig.json**: Configuração do TypeScript para o projeto.
+- **package.json**: Contém as dependências do aplicativo mobile, como React Navigation e Expo.
 
 ## Configuração e Instalação
 
@@ -103,12 +130,34 @@ O Raspberry Pi captura imagens da câmera IP, envia para o backend e controla o 
    python3 capture_and_send.py
    ```
 
+### 3. Aplicativo Mobile (FaceRecognitionApp)
+
+O aplicativo mobile foi desenvolvido em **React Native** usando **Expo** para facilitar o desenvolvimento e a interação com o sistema.
+
+#### Passos:
+1. Instale as dependências do aplicativo:
+
+   ```bash
+   cd FaceRecognitionApp
+   npm install
+   npx expo install
+   ```
+
+2. Inicie o aplicativo usando Expo:
+
+   ```bash
+   npx expo start
+   ```
+
+3. Utilize um dispositivo móvel com o aplicativo **Expo Go** para escanear o QR code e testar o aplicativo.
+
 ## Testes
 
 ### Testando o Sistema:
 1. **Reconhecimento Facial**: Acesse o feed da câmera IP via o navegador usando o IP da câmera para visualizar o stream em tempo real.
 2. **Leitura de NFC**: Aproximar o cartão NFC do leitor para verificar se o acesso será concedido.
 3. **Verificação do Relé**: Após um rosto conhecido ser detectado ou um cartão válido ser lido, o relé será ativado por 5 segundos.
+4. **Aplicativo Mobile**: Utilize as telas do aplicativo para adicionar e validar rostos no sistema.
 
 ### Logs e Depuração
 Monitore a saída no terminal do Raspberry Pi e do backend para verificar se as imagens estão sendo capturadas e enviadas corretamente.
