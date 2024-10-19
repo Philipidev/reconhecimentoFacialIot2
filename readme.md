@@ -107,6 +107,20 @@ O backend é responsável por processar as imagens enviadas pelo Raspberry Pi e 
 
 4. Acesse o backend via `http://<backend_ip>:5000`.
 
+### Usando ngrok para Tornar o Backend Público
+
+Caso deseje acessar o backend de um local remoto, você pode utilizar o **ngrok** para criar um túnel para o servidor Flask.
+
+#### Passos:
+1. Instale o **ngrok** seguindo as instruções no site oficial: [https://ngrok.com/download](https://ngrok.com/download).
+2. Após a instalação, execute o ngrok para criar um túnel para a porta 5000 (a porta do Flask):
+
+   ```bash
+   ngrok http 5000
+   ```
+
+3. Você verá uma URL gerada pelo ngrok, que será algo como `https://<random_id>.ngrok.io`. Use essa URL no lugar do `<backend_ip>` nos scripts ou aplicativos para acessar o backend de qualquer lugar.
+
 ### 2. Raspberry Pi
 
 O Raspberry Pi captura imagens da câmera IP, envia para o backend e controla o relé com base no resultado do reconhecimento facial.
