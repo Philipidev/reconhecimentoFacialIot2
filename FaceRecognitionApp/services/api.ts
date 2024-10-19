@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const NGROK_URL = "https://9a2e-200-106-161-96.ngrok-free.app/";
+const NGROK_URL = "INSERIR_NGROK_URL";
 
 export const API_URL = NGROK_URL;
 
