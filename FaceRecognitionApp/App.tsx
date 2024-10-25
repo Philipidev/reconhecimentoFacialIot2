@@ -88,7 +88,7 @@ function App() {
           }}
         />
       </Stack.Navigator>
-      <StatusBar style="auto" />
+      <StatusBar style="dark" />
     </NavigationContainer>
   );
 }

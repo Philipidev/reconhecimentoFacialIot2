@@ -59,16 +59,17 @@ const ValidateFaceScreen: React.FC = () => {
         onPress={selectPhoto}
         buttonText={'Selecionar Imagem'}
       />
+      <ButtonComponent
+        onPress={validatePhoto}
+        buttonText={'Validar Rosto'}
+        isDisabled={!photo}
+        hasMargin
+      />
       {photo && (
         <ImageComponent
           photo={photo}
         />
       )}
-      <ButtonComponent
-        onPress={validatePhoto}
-        buttonText={'Validar Rosto'}
-        hasMargin
-      />
       {message ? <Text style={ehErro ? [styles.messageStyle, { color: '#d9534f' }] : styles.messageStyle}>{message}</Text> : null}
     </View>
   );
