@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { View, Button, Image, Text, TextInput, StyleSheet } from 'react-native';
+import { View, Image, Text, TextInput, StyleSheet } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { addFace } from '../../services/api';
+import ButtonComponent from '../components/ButtonComponent';
 
 const AddFaceScreen: React.FC = () => {
   const [photo, setPhoto] = useState<string | null>(null);
@@ -62,17 +63,22 @@ const AddFaceScreen: React.FC = () => {
         value={name}
         onChangeText={setName}
       />
-      <Button title="Selecionar Imagem" onPress={selectPhoto} />
+      <ButtonComponent
+        onPress={selectPhoto}
+        buttonText={'Selecionar Imagem'}
+      />
       {photo && (
         <Image
           source={{ uri: photo }}
           style={styles.image}
         />
       )}
-      <Button title="Adicionar Rosto" onPress={uploadPhoto} />
-      {message ? <Text style={
-        ehErro ? [styles.message, { color: '#d9534f' }] : styles.message
-        }>{message}</Text> : null}
+      <ButtonComponent
+        onPress={uploadPhoto}
+        buttonText={'Adicionar Rosto'}
+        hasMargin
+      />
+      {message ? <Text style={ehErro ? [styles.message, { color: '#d9534f' }] : styles.message}>{message}</Text> : null}
     </View>
   );
 };
@@ -98,7 +104,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#71d94f',
   },
-  button:{
+  button: {
     marginTop: 20,
   }
 });

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Button, Image, Text, StyleSheet } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { recognizeFace } from '../../services/api'; // Importa a função recognizeFace
+import ButtonComponent from '../components/ButtonComponent';
 
 const ValidateFaceScreen: React.FC = () => {
   const [photo, setPhoto] = useState<string | null>(null);
@@ -53,18 +54,22 @@ const ValidateFaceScreen: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      <Button title="Selecionar Imagem" onPress={selectPhoto} />
+      <ButtonComponent
+        onPress={selectPhoto}
+        buttonText={'Selecionar Imagem'}
+      />
       {photo && (
         <Image
           source={{ uri: photo }}
           style={styles.image}
         />
       )}
-      <Button title="Validar Rosto" onPress={validatePhoto} />
-      {message ? <Text style={
-        ehErro ? [styles.message, { color: '#d9534f' }] : styles.message
-
-      }>{message}</Text> : null}
+      <ButtonComponent
+        onPress={validatePhoto}
+        buttonText={'Validar Rosto'}
+        hasMargin
+      />
+      {message ? <Text style={ehErro ? [styles.message, { color: '#d9534f' }] : styles.message}>{message}</Text> : null}
     </View>
   );
 };
@@ -77,6 +82,9 @@ const styles = StyleSheet.create({
     width: 200,
     height: 200,
     marginTop: 20,
+    alignSelf: 'center',
+    alignContent: 'center',
+    justifyContent: 'center',
   },
   message: {
     marginTop: 20,
