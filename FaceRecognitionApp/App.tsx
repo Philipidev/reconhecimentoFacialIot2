@@ -8,6 +8,7 @@ import { View } from 'react-native';
 import ButtonComponent from './src/components/ButtonComponent';
 import AddFaceScreen from './src/screen/AddFaceScreen';
 import ValidateFaceScreen from './src/screen/ValidateFaceScreen';
+import CameraFeedScreen from './src/screen/CameraFeedScreen';
 // import CameraFeedScreen from './src/components/CameraFeedScreen';
 
 const Stack = createStackNavigator();
@@ -74,7 +75,7 @@ function App() {
             },
           }}
         />
-        {/* <Stack.Screen
+        <Stack.Screen
           name="CameraFeed"
           component={CameraFeedScreen}
           options={{
@@ -85,7 +86,7 @@ function App() {
               fontWeight: '700',
             },
           }}
-        /> */}
+        />
       </Stack.Navigator>
       <StatusBar style="auto" />
     </NavigationContainer>

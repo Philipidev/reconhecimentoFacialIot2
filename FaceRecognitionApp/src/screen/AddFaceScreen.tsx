@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { View, Image, Text, TextInput, StyleSheet } from 'react-native';
+import { View, Text, TextInput, StyleSheet } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { addFace } from '../../services/api';
 import ButtonComponent from '../components/ButtonComponent';
+import ImageComponent from '../components/ImageComponent';
 
 const AddFaceScreen: React.FC = () => {
   const [photo, setPhoto] = useState<string | null>(null);
@@ -56,7 +57,7 @@ const AddFaceScreen: React.FC = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={{ padding: 20 }}>
       <TextInput
         style={styles.input}
         placeholder="Nome"
@@ -68,9 +69,8 @@ const AddFaceScreen: React.FC = () => {
         buttonText={'Selecionar Imagem'}
       />
       {photo && (
-        <Image
-          source={{ uri: photo }}
-          style={styles.image}
+        <ImageComponent
+          photo={photo}
         />
       )}
       <ButtonComponent
@@ -78,15 +78,12 @@ const AddFaceScreen: React.FC = () => {
         buttonText={'Adicionar Rosto'}
         hasMargin
       />
-      {message ? <Text style={ehErro ? [styles.message, { color: '#d9534f' }] : styles.message}>{message}</Text> : null}
+      {message ? <Text style={ehErro ? [styles.messageStyle, { color: '#d9534f' }] : styles.messageStyle}>{message}</Text> : null}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    padding: 20,
-  },
   input: {
     height: 40,
     borderColor: '#ccc',
@@ -94,19 +91,11 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     paddingHorizontal: 10,
   },
-  image: {
-    width: 200,
-    height: 200,
-    marginTop: 20,
-  },
-  message: {
+  messageStyle: {
     marginTop: 20,
     fontSize: 16,
     color: '#71d94f',
   },
-  button: {
-    marginTop: 20,
-  }
 });
 
 export default AddFaceScreen;
