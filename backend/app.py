@@ -1,11 +1,13 @@
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, jsonify, render_template, Response
 import cv2
 import dlib
 import numpy as np
 import os
 import pickle
 from werkzeug.utils import secure_filename
+import requests  # Certifique-se de que esta biblioteca está instalada.
 
+NGROK_BASE_URL = "https://1d0a-2804-7f2-24c0-90a3-9a7e-9ab8-7141-5dec.ngrok-free.app"
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'uploads/'
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
@@ -30,6 +32,11 @@ def index():
 @app.route('/recognize_form')
 def recognize_form():
     return render_template('recognize.html')
+
+@app.route('/concedAccess')
+def concedAccess():
+    return render_template('concedAccess.html')
+
 
 @app.route('/recognize', methods=['POST'])
 def recognize():
@@ -64,8 +71,9 @@ def recognize():
             for known_descriptor in known_descriptors:
                 distance = np.linalg.norm(np.array(known_descriptor) - np.array(face_descriptor))
                 if distance < 0.6:
+                    grant_access()
                     return jsonify({"access_granted": True, "recognized_face": name})
-
+    denie_access()
     return jsonify({"access_granted": False, "faces_detected": len(faces)})
 
 @app.route('/add_face', methods=['POST'])
@@ -111,6 +119,31 @@ def add_face():
         pickle.dump(known_faces, f)
 
     return f"Rosto de {name} adicionado com sucesso", 200
+
+@app.route('/grant_access', methods=['POST'])
+def grant_access():
+    try:
+        url = f"{NGROK_BASE_URL}/activate_relay_success"
+        response = requests.post(url)
+        if response.status_code == 200:
+            return jsonify({"message": "Acesso concedido com sucesso!"}), 200
+        else:
+            return jsonify({"message": "Falha ao conceder acesso. Verifique a URL."}), 500
+    except Exception as e:
+        return jsonify({"message": f"Erro ao tentar conceder acesso: {str(e)}"}), 500
+
+@app.route('/denie_access', methods=['POST'])
+def denie_access():
+    try:
+        url = f"{NGROK_BASE_URL}/activate_relay_failed"
+        response = requests.post(url)
+        if response.status_code == 200:
+            return jsonify({"message": "Acesso negado com sucesso!"}), 200
+        else:
+            return jsonify({"message": "Falha ao negado acesso. Verifique a URL."}), 500
+    except Exception as e:
+        return jsonify({"message": f"Erro ao tentar negado acesso: {str(e)}"}), 500
+
 
 if __name__ == "__main__":
     # Inicia o servidor Flask

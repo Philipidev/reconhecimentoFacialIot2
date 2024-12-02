@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
-import { recognizeFace } from '../../services/api'; // Importa a função recognizeFace
+import { abdicateAccess, conceedAccess, recognizeFace } from '../../services/api'; // Importa a função recognizeFace
 import ButtonComponent from '../components/ButtonComponent';
 import ImageComponent from '../components/ImageComponent';
 
@@ -39,10 +39,13 @@ const ValidateFaceScreen: React.FC = () => {
 
     try {
       const response = await recognizeFace(photo); // Utiliza a função recognizeFace do api.ts
+
       if (response.access_granted) {
+        await conceedAccess();
         setMessage(`Acesso concedido. Rosto reconhecido: ${response.recognized_face}`);
         setEhErro(false);
       } else {
+        await abdicateAccess();
         setMessage('Acesso negado. Rosto não reconhecido.');
         setEhErro(true);
       }

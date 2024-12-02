@@ -1,5 +1,6 @@
 {
   "expo": {
+    "newArchEnabled": true,
     "name": "FaceRecognitionApp",
     "slug": "FaceRecognitionApp",
     "version": "1.0.0",

@@ -9,6 +9,7 @@ import ButtonComponent from './src/components/ButtonComponent';
 import AddFaceScreen from './src/screen/AddFaceScreen';
 import ValidateFaceScreen from './src/screen/ValidateFaceScreen';
 import CameraFeedScreen from './src/screen/CameraFeedScreen';
+import ConceedAccessScreen from './src/screen/ConceedAccessScreen';
 // import CameraFeedScreen from './src/components/CameraFeedScreen';
 
 const Stack = createStackNavigator();
@@ -23,6 +24,11 @@ function HomeScreen({ navigation }: any) {
       <ButtonComponent
         onPress={() => navigation.navigate('ValidateFace')}
         buttonText={'Validar Rosto'}
+        hasMargin
+      />
+      <ButtonComponent
+        onPress={() => navigation.navigate('ConceedAccess')}
+        buttonText={'Liberar Acesso'}
         hasMargin
       />
       <ButtonComponent
@@ -80,6 +86,18 @@ function App() {
           component={CameraFeedScreen}
           options={{
             title: 'Feed da Câmera',
+            headerTitleAlign: 'center',
+            headerTitleStyle: {
+              fontSize: 20,
+              fontWeight: '700',
+            },
+          }}
+        />
+        <Stack.Screen
+          name="ConceedAccess"
+          component={ConceedAccessScreen}
+          options={{
+            title: 'Liberar Acesso',
             headerTitleAlign: 'center',
             headerTitleStyle: {
               fontSize: 20,
