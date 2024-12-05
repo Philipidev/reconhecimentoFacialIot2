@@ -4,111 +4,69 @@ import { StatusBar } from 'expo-status-bar';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { gestureHandlerRootHOC } from 'react-native-gesture-handler';
-import { View } from 'react-native';
-import ButtonComponent from './src/components/ButtonComponent';
+import Toast from 'react-native-toast-message';
 import AddFaceScreen from './src/screen/AddFaceScreen';
 import ValidateFaceScreen from './src/screen/ValidateFaceScreen';
-import CameraFeedScreen from './src/screen/CameraFeedScreen';
-import ConceedAccessScreen from './src/screen/ConceedAccessScreen';
-// import CameraFeedScreen from './src/components/CameraFeedScreen';
+import HomeScreen from './src/screen/HomeScreen';
 
-const Stack = createStackNavigator();
-
-function HomeScreen({ navigation }: any) {
-  return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20 }}>
-      <ButtonComponent
-        onPress={() => navigation.navigate('AddFace')}
-        buttonText={'Adicionar Rosto'}
-      />
-      <ButtonComponent
-        onPress={() => navigation.navigate('ValidateFace')}
-        buttonText={'Validar Rosto'}
-        hasMargin
-      />
-      <ButtonComponent
-        onPress={() => navigation.navigate('ConceedAccess')}
-        buttonText={'Liberar Acesso'}
-        hasMargin
-      />
-      <ButtonComponent
-        onPress={() => navigation.navigate('CameraFeed')}
-        buttonText={'Feed da Câmera\nDESENVOLVIMENTO'}
-        hasMargin
-        isDisabled
-      />
-    </View>
-  );
+export interface NavigationProps {
+    navigate: (screen: string) => void;
+    goBack: () => void;
+    setOptions: (
+        options: {
+            headerTitle?: string,
+            headerShown?: boolean
+        }
+    ) => void;
 }
 
-function App() {
-  return (
-    <NavigationContainer>
-      <Stack.Navigator initialRouteName="Home">
-        <Stack.Screen
-          name="Home"
-          component={HomeScreen}
-          options={{
-            title: 'Menu Principal',
-            headerTitleAlign: 'center',
-            headerTitleStyle: {
-              fontSize: 20,
-              fontWeight: '700',
-            },
-          }}
-        />
-        <Stack.Screen
-          name="AddFace"
-          component={AddFaceScreen}
-          options={{
-            title: 'Adicionar Rosto',
-            headerTitleAlign: 'center',
-            headerTitleStyle: {
-              fontSize: 20,
-              fontWeight: '700',
-            },
-          }}
-        />
-        <Stack.Screen
-          name="ValidateFace"
-          component={ValidateFaceScreen}
-          options={{
-            title: 'Validar Rosto',
-            headerTitleAlign: 'center',
-            headerTitleStyle: {
-              fontSize: 20,
-              fontWeight: '700',
-            },
-          }}
-        />
-        <Stack.Screen
-          name="CameraFeed"
-          component={CameraFeedScreen}
-          options={{
-            title: 'Feed da Câmera',
-            headerTitleAlign: 'center',
-            headerTitleStyle: {
-              fontSize: 20,
-              fontWeight: '700',
-            },
-          }}
-        />
-        <Stack.Screen
-          name="ConceedAccess"
-          component={ConceedAccessScreen}
-          options={{
-            title: 'Liberar Acesso',
-            headerTitleAlign: 'center',
-            headerTitleStyle: {
-              fontSize: 20,
-              fontWeight: '700',
-            },
-          }}
-        />
-      </Stack.Navigator>
-      <StatusBar style="dark" />
-    </NavigationContainer>
-  );
+const App = () => {
+    const Stack = createStackNavigator();
+
+    return (
+        <NavigationContainer>
+            <StatusBar style="dark" backgroundColor='white' />
+            <Stack.Navigator initialRouteName="Home">
+                <Stack.Screen
+                    name="Home"
+                    component={HomeScreen}
+                    options={{
+                        title: 'Menu Principal',
+                        headerTitleAlign: 'center',
+                        headerTitleStyle: {
+                            fontSize: 20,
+                            fontWeight: '700',
+                        },
+                    }}
+                />
+                <Stack.Screen
+                    name="AddFace"
+                    component={AddFaceScreen}
+                    options={{
+                        title: 'Adicionar Rosto',
+                        headerTitleAlign: 'center',
+                        headerTitleStyle: {
+                            fontSize: 20,
+                            fontWeight: '700',
+                        },
+                    }}
+                />
+                <Stack.Screen
+                    name="ValidateFace"
+                    component={ValidateFaceScreen}
+                    options={{
+                        title: 'Validar Rosto',
+                        headerTitleAlign: 'center',
+                        headerTitleStyle: {
+                            fontSize: 20,
+                            fontWeight: '700',
+                        },
+                    }}
+                />
+            </Stack.Navigator>
+            <Toast />
+        </NavigationContainer>
+    );
 }
 
 export default gestureHandlerRootHOC(App);
