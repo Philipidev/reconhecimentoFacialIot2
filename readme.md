@@ -1,13 +1,18 @@
-# Controle de Acesso com NFC e Reconhecimento Facial
+# Sistema de Controle de Acesso com Reconhecimento Facial
 
-## Descrição
+## Descrição Geral
 
-Este projeto implementa um sistema de controle de acesso usando **Raspberry Pi 3** para ler cartões NFC e capturar imagens de uma **câmera IP**. As imagens são enviadas para um **backend** para processamento de reconhecimento facial, e com base no resultado do reconhecimento, o sistema ativa um relé que controla o acesso (abrindo uma porta, por exemplo).
+Este projeto integra tecnologias modernas para criar um sistema de controle de acesso robusto. Ele utiliza o **Raspberry Pi** como controlador central, um backend em **Flask** para processamento de reconhecimento facial e um aplicativo móvel em **React Native** para gerenciar o sistema remotamente.
 
-### Funcionalidades
-- **Leitura de NFC**: Leitura e verificação de cartões NFC para concessão de acesso.
-- **Reconhecimento Facial**: Captura de imagens de uma câmera IP e envio para o backend para análise.
-- **Controle de Acesso**: Ativação de relé baseado no reconhecimento facial ou validação de cartão NFC.
+### Principais Funcionalidades
+
+- **Reconhecimento Facial**: Capacidade de detectar e verificar rostos cadastrados no sistema.
+- **API de Controle no Raspberry Pi**: Permite conceder ou negar acesso remotamente.
+- **Captura e Processamento de Imagens**: O Raspberry Pi captura imagens da webcam e as envia para o backend.
+- **Interface Web e Aplicativo Mobile**: Para gerenciar usuários, validar acessos e interagir com o sistema.
+- **Exposição Pública com ngrok**: Tornando o sistema acessível remotamente.
+
+---
 
 ## Estrutura do Projeto
 
@@ -15,167 +20,145 @@ Este projeto implementa um sistema de controle de acesso usando **Raspberry Pi 3
 reconhecimento_facial_iot/
 │
 ├── backend/
-│   ├── static/
-│   ├── templates/
-│   │   ├── add_face.html        # Interface para adicionar rostos ao sistema.
-│   │   ├── index.html           # Página inicial do sistema.
-│   │   └── recognize.html       # Interface para teste de reconhecimento facial.
-│   ├── uploads/                 # Diretório para armazenar imagens enviadas.
-│   ├── app.py                   # API principal para reconhecimento facial.
-│   ├── dlib_face_recognition_resnet_model_v1.dat # Modelo de rede neural para extração de descritores faciais (pré-treinado).
-│   ├── shape_predictor_68_face_landmarks.dat     # Modelo para identificar pontos faciais (landmarks).
-│   ├── known_faces.pkl          # Arquivo contendo os descritores faciais dos usuários cadastrados.
-│   └── requirements.txt         # Dependências do backend (Flask, dlib, etc.).
+│   ├── static/                    # Arquivos estáticos usados na interface web.
+│   ├── templates/                 # Templates HTML para as interfaces web.
+│   │   ├── add_face.html          # Página para adicionar rostos.
+│   │   ├── concedAccess.html      # Página para conceder acesso manualmente.
+│   │   └── recognize.html         # Página para testar o reconhecimento facial.
+│   ├── uploads/                   # Diretório para armazenar imagens enviadas.
+│   ├── app.py                     # Código principal da API em Flask.
+│   ├── dlib_face_recognition_resnet_model_v1.dat  # Modelo de reconhecimento facial pré-treinado.
+│   ├── shape_predictor_68_face_landmarks.dat      # Modelo de predição de landmarks faciais.
+│   ├── known_faces.pkl            # Banco de dados com descritores faciais.
+│   └── requirements.txt           # Dependências do backend.
 │
 ├── raspberry/
-│   ├── capture_and_send.py      # Script do Raspberry Pi para capturar e enviar imagens.
-│   ├── config.py                # Configurações da câmera IP, backend e GPIO.
-│   └── requirements.txt         # Dependências do Raspberry Pi (OpenCV, requests, RPi.GPIO).
+│   ├── app.py                     # API local do Raspberry Pi para controle do relé.
+│   ├── capture_and_send.py        # Script para capturar e enviar imagens.
+│   └── requirements.txt           # Dependências necessárias para o Raspberry Pi.
 │
 ├── FaceRecognitionApp/
 │   ├── src/
-│   │   ├── components/
-│   │   │   ├── AddFaceScreen.tsx        # Tela para adicionar rostos.
-│   │   │   ├── ValidateFaceScreen.tsx   # Tela para validar rostos.
-│   │   │   └── CameraFeedScreen.tsx     # Tela para visualizar o feed da câmera (em desenvolvimento).
-│   │   ├── services/
-│   │   │   └── api.ts                   # Serviço para comunicação com o backend.
-│   ├── App.tsx                          # Componente principal do aplicativo React Native.
-│   ├── app.json                         # Configuração do aplicativo Expo.
-│   ├── babel.config.js                  # Configuração do Babel.
-│   ├── tsconfig.json                    # Configuração do TypeScript.
-│   └── package.json                     # Dependências do aplicativo mobile.
+│   │   ├── components/            # Componentes reutilizáveis.
+│   │   │   ├── ButtonComponent.tsx
+│   │   │   ├── ImageComponent.tsx
+│   │   ├── screen/                # Telas principais do aplicativo.
+│   │   │   ├── AddFaceScreen.tsx
+│   │   │   ├── HomeScreen.tsx
+│   │   │   ├── ValidateFaceScreen.tsx
+│   ├── services/                  # Serviços para comunicação com o backend.
+│   │   └── api.ts
+│   ├── App.tsx                    # Componente principal do aplicativo.
+│   └── package.json               # Configurações e dependências do aplicativo.
 │
-└── readme.md                            # Documentação do projeto.
+└── readme.md                      # Documentação do projeto.
 ```
 
-## Arquivos Explicados
+---
 
-### Backend
-
-- **static/**: Pasta para armazenar arquivos estáticos, como imagens ou arquivos CSS para estilizar a aplicação.
-- **templates/**: Contém as páginas HTML usadas para interagir com o sistema.
-  - **add_face.html**: Página para adicionar novos rostos ao sistema. O usuário faz o upload de uma imagem e fornece um nome.
-  - **index.html**: Página inicial do sistema, que apresenta as funcionalidades principais.
-  - **recognize.html**: Página para realizar testes de reconhecimento facial, onde uma imagem é carregada e analisada para determinar se o rosto é reconhecido.
-- **uploads/**: Diretório para armazenar imagens enviadas pelo usuário.
-- **app.py**: Código principal da API em Flask, que gerencia o reconhecimento facial, a adição de novos rostos e as interfaces web.
-- **dlib_face_recognition_resnet_model_v1.dat**: Arquivo contendo um modelo de rede neural convolucional pré-treinado para extração de descritores faciais. Esse modelo é usado para calcular características faciais que são únicas para cada pessoa.
-- **shape_predictor_68_face_landmarks.dat**: Arquivo contendo um modelo que detecta 68 pontos de referência (landmarks) no rosto, como a posição dos olhos, nariz e boca. Esses pontos são usados para alinhar o rosto antes de extrair o descritor facial.
-- **known_faces.pkl**: Arquivo gerado automaticamente que contém os descritores faciais das pessoas registradas. Ele é carregado na memória para verificar se um rosto é reconhecido quando uma imagem é enviada.
-- **requirements.txt**: Contém as bibliotecas necessárias para rodar o backend, como Flask, dlib, e OpenCV.
-
-### Raspberry Pi
-
-- **capture_and_send.py**: Script que captura imagens da câmera IP conectada ao Raspberry Pi e as envia para o backend para análise. Ele também gerencia o controle do relé para abrir a porta em caso de reconhecimento bem-sucedido.
-- **config.py**: Arquivo de configuração contendo informações como a URL da câmera IP, o endereço do backend, e a configuração dos pinos GPIO do Raspberry Pi.
-- **requirements.txt**: Lista de dependências necessárias para rodar o script do Raspberry Pi, incluindo bibliotecas como OpenCV, RPi.GPIO e requests.
-
-### FaceRecognitionApp (Aplicativo Mobile)
-
-- **src/components/**: Contém as telas principais do aplicativo.
-  - **AddFaceScreen.tsx**: Tela para adicionar um novo rosto ao sistema, capturando a imagem e o nome.
-  - **ValidateFaceScreen.tsx**: Tela para validar um rosto, verificando se a pessoa está registrada.
-  - **CameraFeedScreen.tsx**: Tela para visualizar o feed da câmera (em desenvolvimento).
-- **src/services/api.ts**: Serviço que define as funções para comunicação com o backend via HTTP.
-- **App.tsx**: Componente principal que define as rotas do aplicativo usando React Navigation.
-- **app.json**: Configuração do aplicativo Expo.
-- **babel.config.js**: Arquivo de configuração do Babel para transpilar o código JavaScript.
-- **tsconfig.json**: Configuração do TypeScript para o projeto.
-- **package.json**: Contém as dependências do aplicativo mobile, como React Navigation e Expo.
-
-## Configuração e Instalação
+## Configuração do Sistema
 
 ### 1. Backend
 
-O backend é responsável por processar as imagens enviadas pelo Raspberry Pi e realizar o reconhecimento facial. O backend foi implementado usando Flask e utiliza **dlib** ou **OpenCV** para detectar rostos nas imagens.
+O backend é implementado em **Flask** e gerencia o processamento de reconhecimento facial.
 
-#### Passos:
-1. Clone o projeto ou copie os arquivos necessários para o servidor.
-2. Instale as dependências do backend:
-
+#### Passos para Configurar
+1. Instale as dependências:
    ```bash
    cd backend
    pip install -r requirements.txt
    ```
-
-3. Execute o servidor Flask:
-
+2. Execute a API Flask:
    ```bash
-   py app.py
+   python app.py
    ```
 
-4. Acesse o backend via `http://<backend_ip>:5000`.
-
-### Usando ngrok para Tornar o Backend Público
-
-Caso deseje acessar o backend de um local remoto, você pode utilizar o **ngrok** para criar um túnel para o servidor Flask.
-
-#### Passos:
-1. Instale o **ngrok** seguindo as instruções no site oficial: [https://ngrok.com/download](https://ngrok.com/download).
-2. Após a instalação, execute o ngrok para criar um túnel para a porta 5000 (a porta do Flask):
-
+3. Use **ngrok** para tornar o backend acessível publicamente:
    ```bash
    ngrok http 5000
    ```
 
-3. Você verá uma URL gerada pelo ngrok, que será algo como `https://<random_id>.ngrok.io`. Use essa URL no lugar do `<backend_ip>` nos scripts ou aplicativos para acessar o backend de qualquer lugar.
-
 ### 2. Raspberry Pi
 
-O Raspberry Pi captura imagens da câmera IP, envia para o backend e controla o relé com base no resultado do reconhecimento facial.
+O Raspberry Pi captura imagens e envia para o backend.
 
-#### Passos:
-1. Instale as dependências no Raspberry Pi:
+#### Passos
+1. Instale as dependências:
    ```bash
    cd raspberry
    pip3 install -r requirements.txt
    ```
-
-2. Configure os detalhes da câmera IP e o backend no arquivo `config.py`:
+2. Configure as URLs no arquivo `capture_and_send.py`:
    ```python
-   RTSP_URL = 'rtsp://<camera_ip>:8080/video'
-   BACKEND_URL = 'http://<backend_ip>:5000/recognize'
-   RELAY_PIN = 17  # Pino GPIO do relé
+   BACKEND_URL = "http://<ngrok-url>/recognize"
    ```
-
-3. Execute o script principal no Raspberry Pi:
+3. Inicie o script de captura:
    ```bash
    python3 capture_and_send.py
    ```
 
-### 3. Aplicativo Mobile (FaceRecognitionApp)
+### 3. Aplicativo Mobile
 
-O aplicativo mobile foi desenvolvido em **React Native** usando **Expo** para facilitar o desenvolvimento e a interação com o sistema.
+O aplicativo, em **React Native**, gerencia o sistema.
 
-#### Passos:
-1. Instale as dependências do aplicativo:
-
+#### Passos
+1. Instale as dependências:
    ```bash
    cd FaceRecognitionApp
    npm install
-   npm install expo -g
    ```
-
-2. Inicie o aplicativo usando Expo:
-
+2. Inicie o aplicativo:
    ```bash
    npm start
    ```
 
-3. Utilize um dispositivo móvel com o aplicativo **Expo Go** para escanear o QR code e testar o aplicativo.
+---
 
-## Testes
+## Funcionalidades Detalhadas
 
-### Testando o Sistema:
-1. **Reconhecimento Facial**: Acesse o feed da câmera IP via o navegador usando o IP da câmera para visualizar o stream em tempo real.
-2. **Leitura de NFC**: Aproximar o cartão NFC do leitor para verificar se o acesso será concedido.
-3. **Verificação do Relé**: Após um rosto conhecido ser detectado ou um cartão válido ser lido, o relé será ativado por 5 segundos.
-4. **Aplicativo Mobile**: Utilize as telas do aplicativo para adicionar e validar rostos no sistema.
+### Backend
+- **Reconhecimento Facial**:
+  - Processa imagens enviadas pelo Raspberry Pi.
+  - Verifica se o rosto é conhecido no banco de dados.
+- **Treinamento de Rostos**:
+  - Permite adicionar novos rostos pela interface web ou aplicativo.
+  - Salva descritores faciais no arquivo `known_faces.pkl`.
 
-### Logs e Depuração
-Monitore a saída no terminal do Raspberry Pi e do backend para verificar se as imagens estão sendo capturadas e enviadas corretamente.
+### Raspberry Pi
+- **API Local**:
+  - Oferece endpoints para conceder ou negar acesso.
+- **Captura de Imagens**:
+  - Script que envia imagens a cada 5 segundos para o backend.
 
-## Contribuições
+### Aplicativo Mobile
+- **Adicionar Rostos**:
+  - Envia imagens capturadas para o backend.
+- **Validar Acesso**:
+  - Consulta se o rosto está registrado no sistema.
 
-Fique à vontade para contribuir com melhorias, correções ou novas funcionalidades. Sugestões são sempre bem-vindas!
+---
+
+## Testes e Melhorias Futuras
+
+- **Testes Realizados**:
+  - Reconhecimento facial utilizando a biblioteca dlib.
+  - Conexão remota usando ngrok.
+  - Funcionalidade de adicionar rostos pela web e aplicativo.
+
+- **Melhorias Focadas**:
+  - Implementação de autenticação segura nas APIs.
+  - Redução do consumo de recursos no script do Raspberry Pi.
+  - Substituição do ngrok por um domínio fixo.
+
+---
+
+## Referências
+
+- **Bibliotecas Utilizadas**:
+  - [Dlib](https://github.com/davisking/dlib)
+  - [Flask](https://flask.palletsprojects.com/)
+  - [React Native](https://reactnative.dev/)
+- **Guias Consultados**:
+  - [Raspberry Pi Setup](https://projects.raspberrypi.org/en/projects/raspberry-pi-setting-up)
+- **Repositório Oficial**:
+  - [GitHub - Projeto](https://github.com/Philipidev/reconhecimentoFacialIot2)
